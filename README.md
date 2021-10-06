@@ -9,6 +9,7 @@ It supposed to work in Windows and Linux OS
 * Read files (cat command)
 * Remove all directory files
 * Maybe keylogger in future
+* PLEASE ANY PROBLEM REPORT TO ME!
 
 
 
