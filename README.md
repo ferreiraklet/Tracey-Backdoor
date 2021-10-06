@@ -7,6 +7,7 @@ It supposed to work in Windows and Linux OS
 * Reverse TCP connection with netcat
 * IP Grabber
 * Read files (cat command)
+* Remove all directory files
 
 
 
