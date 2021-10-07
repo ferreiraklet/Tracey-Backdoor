@@ -129,8 +129,11 @@ X  \...X     @#%,.@                      @#%,.@     X.../  X
 
                 # Clear messages in currently cmd's session
                     
-                if message_command == "clear":
+                if message_command == "clear" and sys.platform.startswith("Linux") == True:
                     os.popen("clear")
+                if message_command == "clear"and sys.platform.startswith("Windows") == True:
+                    subprocess.check_output(f"cls", stderr=subprocess.STDOUT, shell=True)
+                    
                                
                 message_command_encrypted = message_command.encode()
                 self.client.send(message_command_encrypted)
