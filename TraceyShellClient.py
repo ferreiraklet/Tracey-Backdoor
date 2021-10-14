@@ -7,7 +7,7 @@ import requests
 import re
 import pyautogui
 import time
-from pynput.keyboard import Key, Listener
+# from pynput.keyboard import Key, Listener
 
 if sys.platform.startswith("Windows"):
     import winreg as reg
