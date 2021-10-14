@@ -7,7 +7,7 @@ It supposed to work in Windows and Linux OS
 * Reverse TCP connection with netcat
 * IP Grabber
 * Read files (cat command)
-* Remove all directory files
+* Remove all currently directory files
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
 
