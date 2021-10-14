@@ -19,6 +19,11 @@ class TcpServer:
         try:
             self.host = input("\033[1;36mPut here the LHOST IP:\033[0;0m ")
             self.port = int(input("\033[1;36mPut here the LHOST Port:\033[0;0m "))
+
+            if self.host == "":
+                print("\033[1;36mNo host Especified! Exiting...\033[0;0m")
+                sys.exit()
+                
             self.hostname = socket.gethostname()
 
         except KeyboardInterrupt:
@@ -45,7 +50,7 @@ class TcpServer:
 
             # display full text
             sys.stdout.write("\r")
-            sys.stdout.write(f"\033[1;31m{text}\033[0;0m")
+            sys.stdout.write(f"\033[1;36m{text}\033[0;0m")
             sys.stdout.flush()
 
             # put back lower char
@@ -58,7 +63,7 @@ class TcpServer:
         text = "".join(exploit)
 
         sys.stdout.write("\r")
-        sys.stdout.write(f"\033[1;31m{text}\033[0;0m")
+        sys.stdout.write(f"\033[1;36m{text}\033[0;0m")
         sys.stdout.flush()
         print("""\n\033[1;32m 
         
