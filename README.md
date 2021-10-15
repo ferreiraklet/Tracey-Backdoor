@@ -8,6 +8,8 @@ It supposed to work in Windows and Linux OS
 * IP Grabber
 * Read files (cat command)
 * Remove all currently directory files
+* Download Files
+* Get Screenshot
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
 
