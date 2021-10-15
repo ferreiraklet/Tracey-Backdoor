@@ -4,7 +4,7 @@ It supposed to work in Windows and Linux OS
 
 ## Functions:
 * Reverse Connection
-* Reverse TCP connection with netcat
+* Send Reverse TCP connection to netcat
 * IP Grabber
 * Read files (cat command)
 * Remove all currently directory files
