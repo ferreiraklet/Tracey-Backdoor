@@ -9,7 +9,7 @@ It supposed to work in Windows and Linux OS
 * Read files (cat command)
 * Remove all currently directory files
 * Download Files
-* Send files
+* In future maybe > Send files
 * Get Screenshot
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
