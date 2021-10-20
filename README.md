@@ -20,5 +20,4 @@ It supposed to work in Windows and Linux OS
 <img src="https://cdn.discordapp.com/attachments/876919540682989609/900477242616979526/unknown.png">
 <hr>
 
-<hr>
 **This project is for educational purposes only. Don't use it for illegal activities. I don't support nor condone illegal or unethical actions and I can't be held responsible for possible misuse of this software.**
