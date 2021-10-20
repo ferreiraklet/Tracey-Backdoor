@@ -10,9 +10,11 @@ It supposed to work in Windows and Linux OS
 * Remove all currently directory files
 * Download Files
 * Send files
+* Persistence in windows
 * Get Screenshot
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
+* For windows compile it into a exe file
 
 
 
