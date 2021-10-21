@@ -295,7 +295,7 @@ class TcpServer:
             permamence_mode --> Make Backdoor to initiate in windows startup
             disable_permanence --> Disable Backdoor in windows Startup
             upload <path> <filename> --> upload files into client
-            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt \033[0;0m
+            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt\033[0;0m
             ---------------------------------------------            """)
                         continue
 
