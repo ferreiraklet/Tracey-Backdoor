@@ -3,7 +3,6 @@ import subprocess
 import sys
 import os
 import platform
-from winreg import OpenKey
 import requests
 import re
 import pyautogui
