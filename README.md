@@ -15,6 +15,7 @@ It supposed to work in Windows and Linux OS
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
 * For windows compile it into a exe file
+* OBS: If you want to exit and break the connection in both sides, type "exit" in the command input
 
 <hr>
 <img src="https://cdn.discordapp.com/attachments/876919540682989609/900477242616979526/unknown.png">
