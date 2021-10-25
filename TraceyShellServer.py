@@ -271,29 +271,31 @@ class TcpServer:
                         # file_name = message_command.split(" ")[1]
                         self.client.send(message_command.encode())
                         print("\033[0;31m[+]\033[0;0m - Waiting Files...")
-                        try:
-                            #while self.client.recv(1024).decode() != 'done'
-                            done = True
-                            while done:
-                                file_name = self.client.recv(1024).decode()
-                                ssize = self.client.recv(1024).decode("utf-8")
-                                int_ssize = int(ssize)
+                        start_downloading = self.client.recv(1024).decode()
+                        if start_downloading == "Starting!":
+                            try:
+                                #while self.client.recv(1024).decode() != 'done'
+                                done = True
+                                while done:
+                                    file_name = self.client.recv(1024).decode()
+                                    ssize = self.client.recv(1024).decode("utf-8")
+                                    int_ssize = int(ssize)
 
-                                print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
-                                time.sleep(1.5)
-                                str_data = b""
-                                while len(str_data) < int_ssize:
-                                    str_data += self.client.recv(int_ssize)
-                
-                                with open(file_name,"wb") as sc:
-                                    sc.write(str_data)
+                                    print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
+                                    time.sleep(1.5)
+                                    str_data = b""
+                                    while len(str_data) < int_ssize:
+                                        str_data += self.client.recv(int_ssize)
+                    
+                                    with open(file_name,"wb") as sc:
+                                        sc.write(str_data)
 
-                                print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_ssize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
-                                if self.client.recv(1024).decode() == "done!":
-                                    done = False
-                            continue
-                        except MemoryError:
-                            print("You do not have enough space!")
+                                    print(f"\033[1;32m[+]\033[0;0m - Download to {file_name} finished! File Size: {str(int_ssize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...")
+                                    if self.client.recv(1024).decode() == "done!":
+                                        done = False
+                            except MemoryError:
+                                print("You do not have enough space!")
+                        continue
                             
                     if message_command == "cat":
                         print("You need to especify a file!")
