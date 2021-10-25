@@ -280,7 +280,7 @@ class TcpServer:
                                 int_ssize = int(ssize)
 
                                 print("\033[0;31m[+]\033[0;0m - Receiving Data...\n")
-
+                                time.sleep(1.5)
                                 str_data = b""
                                 while len(str_data) < int_ssize:
                                     str_data += self.client.recv(int_ssize)
