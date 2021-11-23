@@ -1,4 +1,4 @@
-# Tracey-Backdoor
+# Tracey-Backdoor V2
 A Reverse Shell Backdoor made in python OOP.
 It supposed to work in Windows and Linux OS
 
