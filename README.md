@@ -14,11 +14,11 @@ It supposed to work in Windows and Linux OS
 * Get Screenshot
 * Maybe keylogger in future
 * PLEASE ANY PROBLEM REPORT TO ME!
-* For windows compile it into a exe file
+* Can be used with ngrok
 * OBS: If you want to exit and break the connection in both sides, type "exit" in the command input
 
 <hr>
-<img src="https://cdn.discordapp.com/attachments/876919540682989609/900477242616979526/unknown.png">
+<img src="https://cdn.discordapp.com/attachments/876919540682989609/912776381396549684/unknown.png">
 <hr>
 
 **This project is for educational purposes only. Don't use it for illegal activities. I don't support nor condone illegal or unethical actions and I can't be held responsible for possible misuse of this software.**
