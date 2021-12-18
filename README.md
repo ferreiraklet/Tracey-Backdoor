@@ -10,6 +10,7 @@ It supposed to work in Windows and Linux OS
 * Remove all currently directory files
 * Download Files
 * Send files
+* Dump Chrome and brave passwords
 * Persistence in windows
 * Get Screenshot
 * Maybe keylogger in future
